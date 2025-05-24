@@ -36,11 +36,36 @@
     <h1>ESP32-CAM Robot</h1>
     <img src="" id="photo">
     <table>
-      <tr><td colspan="3" align="center"><button class="button" onmousedown="toggleCheckbox('forward');" ontouchstart="toggleCheckbox('forward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Adelante</button></td></tr>
-      <tr><td align="center"><button class="button" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Izquierda</button></td><td align="center"><button class="button" onmousedown="toggleCheckbox('stop');" ontouchstart="toggleCheckbox('stop');">Stop</button></td><td align="center"><button class="button" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Derecha</button></td></tr>
-      <tr><td colspan="3" align="center"><button class="button" onmousedown="toggleCheckbox('backward');" ontouchstart="toggleCheckbox('backward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Atras</button></td></tr>   
-      <tr><td colspan="3" align="center"><button class="button" onmousedown="toggleCheckbox('flash');" ontouchstart="toggleCheckbox('flash');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Luz</button></td></tr>                
+      <tr>
+        <td colspan="3" align="center">
+          <button class="button" onmousedown="toggleCheckbox('forward');" ontouchstart="toggleCheckbox('forward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');"> ^ </button>
+        </td>
+      </tr>
+      
+      <tr>
+        <td align="center">
+          <button class="button" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');"> &lt; </button>
+        </td>
+        <td align="center">
+          <button class="button" onmousedown="toggleCheckbox('stop');" ontouchstart="toggleCheckbox('stop');">&#x23F8;</button>
+        </td>
+        <td align="center">
+          <button class="button" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');"> &gt; </button>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3" align="center">
+          <button class="button" onmousedown="toggleCheckbox('backward');" ontouchstart="toggleCheckbox('backward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');"> v </button>
+        </td>
+      </tr>   
+      <tr>
+        <td colspan="3" align="center">
+          <button class="button" onmousedown="toggleCheckbox('flash');" ontouchstart="toggleCheckbox('flash');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');"><img src="src/bombilla.png" alt="Stop" style="height:24px;vertical-align:middle;"></button>
+        </td>
+      </tr>                
     </table>
+    
     <script>
       function toggleCheckbox(x) {
         var xhr = new XMLHttpRequest();
