@@ -15,9 +15,7 @@ if __name__ == '__main__':
     
 
 
-
-# Importing MongoClient from pymongo to connect to MongoDB
-uri = "mongodb+srv://CesarDiaz:<db_password>@usuario.bviba3u.mongodb.net/?retryWrites=true&w=majority&appName=Usuario"
+uri = "mongodb+srv://KimmyCesy:dLH5SqZntK53xu3z@clustercar.dd10bwo.mongodb.net/?retryWrites=true&w=majority&appName=ClusterCAR"
 # Create a new client and connect to the server
 client = MongoClient(uri)
 # Send a ping to confirm a successful connection
