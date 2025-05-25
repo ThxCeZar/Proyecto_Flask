@@ -97,6 +97,15 @@ def send_command():
     return jsonify({"status": "error", "message": "No command provided"}), 400
 
 
+@app.route('/actualizar_ip', methods=['POST'])
+def actualizar_ip():
+    global esp32_ip
+    data = request.get_json()
+    esp32_ip = data.get("ip")
+    print(f"ESP32-CAM IP actualizada: {esp32_ip}")
+    return "OK"
+
+
 
 
 
