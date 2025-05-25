@@ -3,6 +3,10 @@ from flask_cors import CORS
 import os
 from datetime import datetime
 import glob
+from PIL import Image
+import io
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -48,18 +52,21 @@ def upload_image():
     image_path = f'static/uploads/image_{timestamp}.jpg'
     os.makedirs('static/uploads', exist_ok=True)
     
-    with open(image_path, 'wb') as f:
-        f.write(request.data)
+    # Comprimir imagen
+    img = Image.open(io.BytesIO(request.data))
+    img = img.convert('RGB')
+    img.save(image_path, 'JPEG', quality=70) # Reducir calidad a 70
     
     last_image = image_path
     
-    # Limpiar imágenes antiguas (mantener solo las últimas 10)
     images = sorted(glob.glob('static/uploads/image_*.jpg'))
-    if len(images) > 10:
-        for old_image in images[:-10]:
+    if len(images) > 5:
+        for old_image in images[:-5]:
             os.remove(old_image)
     
     return jsonify({'message': 'Image received successfully'}), 200
+
+
 
 @app.route('/ultima_imagen.jpg')
 def ultima_imagen():
