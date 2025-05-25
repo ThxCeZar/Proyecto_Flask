@@ -142,13 +142,16 @@ def recibir_imagen():
 
 @app.route('/guardar_imagen', methods=['POST'])
 def guardar_imagen():
-    with open('ultima_imagen.jpg', 'wb') as f:
+    with open('/tmp/ultima_imagen.jpg', 'wb') as f:
         f.write(request.data)
     return 'Imagen recibida', 200
 
 @app.route('/ultima_imagen.jpg')
 def servir_imagen():
-    return send_file('ultima_imagen.jpg', mimetype='image/jpeg')
+    if os.path.exists("ultima_imagen.jpg"):
+        return send_file("ultima_imagen.jpg", mimetype='image/jpeg')
+    else:
+        return abort(404, description="Imagen no encontrada")
 
 
 
