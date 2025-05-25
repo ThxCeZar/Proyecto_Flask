@@ -1,5 +1,5 @@
 from io import BytesIO
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, abort, jsonify, render_template, request, send_file
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os # Importar 'os' para manejar variables de entorno de forma segura
@@ -140,12 +140,19 @@ def recibir_imagen():
     ultima_imagen = BytesIO(request.data)
     return "Imagen recibida", 200
 
+@app.route('/guardar_imagen', methods=['POST'])
+def guardar_imagen():
+    with open('ultima_imagen.jpg', 'wb') as f:
+        f.write(request.data)
+    return 'Imagen recibida', 200
+
 @app.route('/ultima_imagen.jpg')
 def servir_imagen():
-    global ultima_imagen
-    if ultima_imagen is None:
-        return "No hay imagen aún", 404
-    return send_file(ultima_imagen, mimetype='image/jpeg')
+    return send_file('ultima_imagen.jpg', mimetype='image/jpeg')
+
+
+
+
 
 
 
