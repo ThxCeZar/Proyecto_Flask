@@ -1,41 +1,32 @@
-from io import BytesIO
-from flask import Flask, jsonify, request, send_file, abort, render_template, send_from_directory
+from flask import Flask, jsonify, request, send_file, render_template
 from flask_cors import CORS
 import os
-import logging
+from datetime import datetime
+import glob
 
 app = Flask(__name__)
 CORS(app)
 
-
 last_command = "none"
-# Si no vas a usar IP ni proxy, eliminas esp32_ip
-
-
-
+last_image = None
 
 @app.route('/action', methods=['GET'])
 def action():
     global last_command
-    command = request.args.get('go')  # Obtiene el comando de la consulta
+    command = request.args.get('go')
     if command:
-        last_command = command  # Actualiza el último comando
+        last_command = command
         print(f"Comando recibido: {command}")
-        
-        # Reiniciar last_command a "none" si el comando es "stop"
         if command == "stop":
             last_command = "none"
-        
         return jsonify({"status": "success", "command": command})
     return jsonify({"status": "error", "message": "No command provided"}), 400
-
 
 @app.route('/send_command', methods=['POST', 'GET'])
 def send_command():
     global last_command
     data = request.get_json()
     command = data.get('command') if data else None
-
     if command:
         last_command = command
         print(f"Comando '{command}' recibido de la web.")
@@ -47,37 +38,35 @@ def get_command():
     global last_command
     return jsonify({"action": last_command})
 
-
-
-
-
-
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
+    global last_image
     if not request.data:
         return jsonify({'error': 'No image data'}), 400
-    image_data = request.data
-    with open('static/ultima_imagen.jpg', 'wb') as f:
-        f.write(image_data)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    image_path = f'static/uploads/image_{timestamp}.jpg'
+    os.makedirs('static/uploads', exist_ok=True)
+    
+    with open(image_path, 'wb') as f:
+        f.write(request.data)
+    
+    last_image = image_path
+    
+    # Limpiar imágenes antiguas (mantener solo las últimas 10)
+    images = sorted(glob.glob('static/uploads/image_*.jpg'))
+    if len(images) > 10:
+        for old_image in images[:-10]:
+            os.remove(old_image)
+    
     return jsonify({'message': 'Image received successfully'}), 200
-
 
 @app.route('/ultima_imagen.jpg')
 def ultima_imagen():
-    return send_from_directory('.', 'ultima_imagen.jpg')
-
-    
-
-
-
-
-
-
-
-
-
-
-
+    global last_image
+    if not last_image or not os.path.exists(last_image):
+        return jsonify({'error': 'No image available'}), 404
+    return send_file(last_image, mimetype='image/jpeg')
 
 @app.route('/')
 def home():
@@ -85,28 +74,7 @@ def home():
 
 @app.route('/pagina2')
 def camera():
-    # No se necesita pasar IP si no haces proxy
     return render_template("index.html")
 
-
-
-
-
-
-
-
-
-def test_mongodb_connection():
-    # Si no usas MongoDB aún, puedes comentar o dejar solo para pruebas
-    pass
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
-    test_mongodb_connection()
     app.run(debug=True)
