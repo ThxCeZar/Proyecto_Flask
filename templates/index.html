@@ -183,22 +183,23 @@
     </table>
 
     <script>
-        function toggleCheckbox(x) {
-          console.log("Enviando comando:", x);
-          var xhr = new XMLHttpRequest();
-          xhr.open("GET", "/action?go=" + x, true);
-          
-          // Manejar la respuesta
-          xhr.onload = function() {
-              if (xhr.status >= 200 && xhr.status < 300) {
-                  console.log("Respuesta del servidor:", xhr.responseText);
-              } else {
-                  console.error("Error en la solicitud:", xhr.statusText);
-              }
-          };
-          
-          xhr.send();
+           function toggleCheckbox(x) {
+            console.log("Enviando comando:", x);
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/action?go=" + x, true);
+            
+            // Manejar la respuesta
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    console.log("Respuesta del servidor:", xhr.responseText);
+                } else {
+                    console.error("Error en la solicitud:", xhr.statusText);
+                }
+            };
+            
+            xhr.send();
         }
+   
 
         // Map keys to actions and buttons
         const keyMap = {
