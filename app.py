@@ -34,7 +34,7 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 
 
 last_command = "none"
-esp32_ip = "none"
+esp32_ip = ""
 
 
 
@@ -169,6 +169,7 @@ def home():
 @app.route('/pagina2')
 def camera():
     global esp32_ip
+    ip_para_template = esp32_ip if esp32_ip else ""
     return render_template("index.html", ip_camara=esp32_ip)
 
 

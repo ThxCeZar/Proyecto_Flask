@@ -124,8 +124,14 @@
 <body>
     <h1>ESP32-CAM Robot</h1>
 
-    <img src="{{ ip_camara }}" alt="Stream cámara" />
-    
+
+    {% if ip_camara %}
+  <img src="{{ ip_camara }}" alt="Stream cámara" />
+{% else %}
+  <p>No hay cámara disponible</p>
+{% endif %}
+
+
     <table>
         <tr>
             <td colspan="3">
