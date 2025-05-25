@@ -155,25 +155,38 @@
 
     <footer>Version 2.0.0.5 - Copyright® KyC University Group - 2025 </footer>
 
-    <script>
-        const form = document.getElementById('login-form');
-        const errorMessage = document.getElementById('error-message');
+  <script>
+    const form = document.getElementById('login-form');
+    const errorMessage = document.getElementById('error-message');
 
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
 
-            // Simple hardcoded user credentials for demonstration
-            const username = form.username.value.trim();
-            const password = form.password.value;
+        const username = form.username.value.trim();
+        const password = form.password.value;
 
-            if (username === 'user' && password === '123') {
-                // Redirect on successful login
+        fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
                 window.location.href = '/pagina2';
             } else {
-                // Show error message
+                errorMessage.textContent = data.error;
                 errorMessage.style.display = 'block';
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorMessage.textContent = 'Error del servidor.';
+            errorMessage.style.display = 'block';
         });
-    </script>
+    });
+</script>
 </body>
 </html>

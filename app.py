@@ -1,3 +1,5 @@
+import json
+import bcrypt
 from flask import Flask, jsonify, request, send_file, render_template
 from flask_cors import CORS
 import os
@@ -13,6 +15,37 @@ CORS(app)
 
 last_command = "none"
 last_image = None
+
+
+
+
+# Cargar usuarios
+with open('usuarios.json') as f:
+    usuarios = json.load(f)
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data['username']
+    password = data['password']
+
+    for user in usuarios:
+        if user['username'] == username:
+            if bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+                return jsonify({"success": True})
+            else:
+                return jsonify({"success": False, "error": "Contraseña incorrecta"})
+
+    return jsonify({"success": False, "error": "Usuario no encontrado"})
+
+
+
+
+
+
+
+
+
 
 @app.route('/action', methods=['GET'])
 def action():
