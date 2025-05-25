@@ -129,32 +129,27 @@
     <div id="loadingMessage">Cargando stream de cámara...</div>
 
     <script>
-        const streamImg = document.getElementById('streamCamara');
-        const loadingMessage = document.getElementById('loadingMessage');
+        const img = document.getElementById('streamCamara');
+        const loadingMsg = document.getElementById('loadingMessage');
 
         function actualizarImagen() {
-            // Añadimos un timestamp para evitar caché
-            streamImg.src = "/ultima_imagen.jpg?t=" + new Date().getTime();
-
-            // Si la imagen carga, ocultar loading
-            streamImg.onload = () => {
-                loadingMessage.style.display = "none";
-                streamImg.style.display = "block";
-            };
-
-            streamImg.onerror = () => {
-                loadingMessage.innerText = "Error cargando imagen de cámara.";
-                streamImg.style.display = "none";
-            };
+            const timestamp = new Date().getTime(); // evita caché
+            img.src = `/ultima_imagen.jpg?t=${timestamp}`;
         }
 
-        // Actualiza la imagen cada 1 segundo (1000 ms)
-        setInterval(actualizarImagen, 100);
+        img.onload = function () {
+            img.style.display = 'block';
+            loadingMsg.style.display = 'none';
+        };
 
-        // Carga inicial
-        actualizarImagen();
+        img.onerror = function () {
+            img.style.display = 'none';
+            loadingMsg.style.display = 'block';
+        };
+
+        // Actualiza la imagen cada 300ms (ajustable)
+        setInterval(actualizarImagen, 300);
     </script>
-
 
     <table>
         <tr>
