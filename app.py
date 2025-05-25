@@ -31,7 +31,7 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 
 
 last_command = "none"
-esp32_ip = "None"
+esp32_ip = "none"
 
 
 
@@ -126,9 +126,12 @@ def send_command():
 def actualizar_ip():
     global esp32_ip
     data = request.get_json()
-    esp32_ip = data.get("ip")
-    print(f"ESP32-CAM IP actualizada: {esp32_ip}")
-    return "OK"
+    if not data or 'ip' not in data:
+        return jsonify({"error": "Falta el campo 'ip'"}), 400
+
+    esp32_ip = data['ip']
+    print(f"[+] IP de cámara actualizada: {esp32_ip}")
+    return jsonify({"status": "ok", "ip": esp32_ip}), 200
 
 
 
