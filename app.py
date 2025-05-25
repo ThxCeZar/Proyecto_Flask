@@ -4,6 +4,8 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os # Importar 'os' para manejar variables de entorno de forma segura
 import requests
+import logging
+
 from flask_cors import CORS
 
 
