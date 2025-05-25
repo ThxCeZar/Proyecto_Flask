@@ -17,7 +17,7 @@ last_command = "none"
 
 
 
-@app.route('/send_command', methods=['POST'])
+@app.route('/send_command', methods=['POST', 'GET'])
 def send_command():
     global last_command
     data = request.get_json()
