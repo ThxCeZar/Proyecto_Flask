@@ -1,243 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ESP32-CAM Robot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream de Cámara ESP32</title>
     <style>
-        :root {
-            --neon-red: #ff073a;
-            --neon-red-dark: #e0032f;
-            --bg-gradient-start: #0b0b0b;
-            --bg-gradient-middle: #141414;
-            --bg-gradient-end: #1a1a1a;
-            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            --button-font-size: 18px;
-            --button-padding: 12px 20px;
-            --button-radius: 6px;
-        }
-
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-middle) 50%, var(--bg-gradient-end) 100%);
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            font-family: var(--font-family);
-            color: #fff;
-            text-align: center;
-        }
-
         body {
-            padding-top: 30px;
-            box-sizing: border-box;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
         }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 20px;
+        #stream-container {
+            width: 640px; /* Ajusta el tamaño según la resolución de tu cámara */
+            height: 480px;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-
-        img {
-            width: auto;
+        #stream-image {
             max-width: 100%;
-            height: auto;
-            margin-bottom: 20px;
-            border: 2px solid var(--neon-red);
-            border-radius: 8px;
-            box-shadow: 0 0 10px var(--neon-red), 0 0 20px var(--neon-red);
+            max-height: 100%;
+            object-fit: contain; /* Ajusta cómo la imagen se adapta al contenedor */
         }
-
-        table {
-            margin: 0 auto;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        td {
-            padding: 8px;
-        }
-
-        .button {
-            background-color: var(--neon-red);
-            border: none;
-            color: white;
-            padding: var(--button-padding);
-            text-align: center;
-            font-size: var(--button-font-size);
-            margin: 6px 3px;
-            cursor: pointer;
-            border-radius: var(--button-radius);
-            user-select: none;
-            box-shadow: 0 0 5px var(--neon-red), 0 0 10px var(--neon-red);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .button:hover {
-            background-color: var(--neon-red-dark);
-            box-shadow: 0 0 10px var(--neon-red-dark), 0 0 20px var(--neon-red-dark);
-        }
-
-        /* Buttons with no fill and neon red text and border for directional and stop buttons */
-        .button.icon-button {
-            background: transparent;
-            color: var(--neon-red);
-            padding: 0;
-            min-width: 60px; /* Increased size for remote control effect */
-            min-height: 60px; /* Increased size for remote control effect */
-            line-height: 60px; /* Center text vertically */
-            font-weight: 700;
-            font-size: 36px; /* Increased font size for better visibility */
-            border: 2px solid var(--neon-red);
-            border-radius: var(--button-radius);
-            box-shadow: 0 0 5px var(--neon-red), 0 0 10px var(--neon-red);
-            transition: color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            user-select: none;
-            cursor: pointer;
-        }
-
-        .button.icon-button:hover {
-            color: var(--neon-red-dark);
-            border-color: var(--neon-red-dark);
-            box-shadow: 0 0 10px var(--neon-red-dark), 0 0 20px var(--neon-red-dark);
-        }
-
-        @media (max-width: 400px) {
-            h1 {
-                font-size: 22px;
-            }
-            .button {
-                font-size: 16px;
-                padding: 10px 15px;
-            }
-            .button.icon-button {
-                font-size: 24px; /* Adjusted for smaller screens */
-                min-width: 50px; /* Adjusted for smaller screens */
-                min-height: 50px; /* Adjusted for smaller screens */
-                line-height: 50px; /* Adjusted for smaller screens */
-            }
+        p {
+            color: #777;
         }
     </style>
 </head>
 <body>
-    <h1>ESP32-CAM Robot</h1>
-
-
-    <img id="streamCamara" src="" style="max-width: 100%; border: 2px solid var(--neon-red); border-radius: 8px; box-shadow: 0 0 10px var(--neon-red), 0 0 20px var(--neon-red);" alt="Stream de cámara" />
-    <div id="loadingMessage">Cargando stream de cámara...</div>
-
-    <script>
-        const img = document.getElementById('streamCamara');
-        const loadingMsg = document.getElementById('loadingMessage');
-
-        function actualizarImagen() {
-            const timestamp = new Date().getTime(); // evita caché
-            img.src = `/ultima_imagen.jpg?t=${timestamp}`;
-        }
-
-        img.onload = function () {
-            img.style.display = 'block';
-            loadingMsg.style.display = 'none';
-        };
-
-        img.onerror = function () {
-            img.style.display = 'none';
-            loadingMsg.style.display = 'block';
-        };
-
-        // Actualiza la imagen cada 300ms (ajustable)
-        setInterval(actualizarImagen, 300);
-    </script>
-
-    <table>
-        <tr>
-            <td colspan="3">
-                <button id="btn-forward" class="button icon-button" onmousedown="toggleCheckbox('forward');" ontouchstart="toggleCheckbox('forward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">^</button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button id="btn-left" class="button icon-button" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&lt;</button>
-            </td>
-            <td>
-                <button id="btn-stop" class="button icon-button" onmousedown="toggleCheckbox('stop');" ontouchstart="toggleCheckbox('stop');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&#x23F8;</button>
-            </td>
-            <td>
-                <button id="btn-right" class="button icon-button" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&gt;</button>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <button id="btn-backward" class="button icon-button" onmousedown="toggleCheckbox('backward');" ontouchstart="toggleCheckbox('backward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">v</button>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <button class="button" onmousedown="toggleCheckbox('flash');" ontouchstart="toggleCheckbox('flash');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">
-                    <img src="/static/bombilla.png" style="height:24px; vertical-align:middle;" alt="Flash Icon" />
-                </button>
-            </td>
-        </tr>
-    </table>
+    <div id="stream-container">
+        <img id="stream-image" src="" alt="Stream de Cámara">
+        <p>Cargando stream...</p>
+    </div>
 
     <script>
-           function toggleCheckbox(x) {
-            console.log("Enviando comando:", x);
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/action?go=" + x, true);
-            
-            // Manejar la respuesta
-            xhr.onload = function() {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    console.log("Respuesta del servidor:", xhr.responseText);
-                } else {
-                    console.error("Error en la solicitud:", xhr.statusText);
-                }
-            };
-            
-            xhr.send();
+        const streamImage = document.getElementById('stream-image');
+        const apiUrl = 'TU_URL_DE_RENDER/latest_image'; // Reemplaza con la URL de tu API en Render
+
+        function updateStream() {
+            streamImage.src = apiUrl + '?' + new Date().getTime(); // Evita el caché del navegador
         }
-   
 
-        // Map keys to actions and buttons
-        const keyMap = {
-            'ArrowUp': {action: 'forward', buttonId: 'btn-forward'},
-            'ArrowDown': {action: 'backward', buttonId: 'btn-backward'},
-            'ArrowLeft': {action: 'left', buttonId: 'btn-left'},
-            'ArrowRight': {action: 'right', buttonId: 'btn-right'},
-            'w': {action: 'forward', buttonId: 'btn-forward'},
-            'W': {action: 'forward', buttonId: 'btn-forward'},
-            's': {action: 'backward', buttonId: 'btn-backward'},
-            'S': {action: 'backward', buttonId: 'btn-backward'},
-            'a': {action: 'left', buttonId: 'btn-left'},
-            'A': {action: 'left', buttonId: 'btn-left'},
-            'd': {action: 'right', buttonId: 'btn-right'},
-            'D': {action: 'right', buttonId: 'btn-right'}
-        };
-
-        const activeKeys = new Set();
-
-        // Handle keydown events
-        window.addEventListener('keydown', function(e) {
-            if (keyMap[e.key] && !activeKeys.has(e.key)) {
-                activeKeys.add(e.key);
-                const {action, buttonId} = keyMap[e.key];
-                toggleCheckbox(action);
-                document.getElementById(buttonId).classList.add('pressed');
-            }
-        });
-
-        // Handle keyup events
-        window.addEventListener('keyup', function(e) {
-            if (keyMap[e.key]) {
-                activeKeys.delete(e.key);
-                toggleCheckbox('stop');
-                const {buttonId} = keyMap[e.key];
-                document.getElementById(buttonId).classList.remove('pressed');
-            }
-        });
+        // Actualiza la imagen cada X milisegundos (debe ser similar al intervalo de envío del ESP32)
+        const updateInterval = 1000; // En milisegundos
+        setInterval(updateStream, updateInterval);
     </script>
 </body>
 </html>
