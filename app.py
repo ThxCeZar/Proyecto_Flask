@@ -82,7 +82,15 @@ def send_command():
         return jsonify({"status": "success", "command": command})
     return jsonify({"status": "error", "message": "No command provided"}), 400
 
-
+@app.route('/action', methods=['GET'])
+def action():
+       global last_command
+       command = request.args.get('go')  # Obtiene el comando de la consulta
+       if command:
+           last_command = command  # Actualiza el último comando
+           print(f"Comando recibido: {command}")
+           return jsonify({"status": "success", "command": command})
+       return jsonify({"status": "error", "message": "No command provided"}), 400
 
 
 # --- Ejecución de la aplicación ---
