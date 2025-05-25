@@ -123,7 +123,11 @@
 </head>
 <body>
     <h1>ESP32-CAM Robot</h1>
-    <img src="http://{{ ip_camara }}:81/stream" width="320" height="240">
+    {% if ip_camara %}
+      <img src="http://{{ ip_camara }}:81/stream" width="320" height="240">
+    {% else %}
+      <p>Esperando IP del ESP32-CAM...</p>
+    {% endif %}
     <table>
         <tr>
             <td colspan="3">
