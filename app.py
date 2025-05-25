@@ -18,6 +18,8 @@ uri = os.getenv("MONGODB_URI", "mongodb+srv://KimmyCesy:dLH5SqZntK53xu3z@cluster
 # Puedes usar la API de servidor para asegurar la compatibilidad futura.
 client = MongoClient(uri, server_api=ServerApi('1'))
 
+last_command = "none"
+
 # --- Prueba de conexión a MongoDB ---
 def test_mongodb_connection():
     try:
@@ -84,13 +86,13 @@ def send_command():
 
 @app.route('/action', methods=['GET'])
 def action():
-       global last_command
-       command = request.args.get('go')  # Obtiene el comando de la consulta
-       if command:
-           last_command = command  # Actualiza el último comando
-           print(f"Comando recibido: {command}")
-           return jsonify({"status": "success", "command": command})
-       return jsonify({"status": "error", "message": "No command provided"}), 400
+    global last_command
+    command = request.args.get('go')  # Obtiene el comando de la consulta
+    if command:
+        last_command = command  # Actualiza el último comando
+        print(f"Comando recibido: {command}")
+        return jsonify({"status": "success", "command": command})
+    return jsonify({"status": "error", "message": "No command provided"}), 400
 
 
 # --- Ejecución de la aplicación ---
