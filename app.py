@@ -14,23 +14,23 @@ CORS(app)
 
 
 #######
-
+#######
+#######
 #######
 
-#######
 
-#######
 
 uri = os.getenv("MONGODB_URI", "mongodb+srv://KimmyCesy:dLH5SqZntK53xu3z@clustercar.dd10bwo.mongodb.net/?retryWrites=true&w=majority&appName=ClusterCAR")
 client = MongoClient(uri, server_api=ServerApi('1'))
 
-#######
+
 
 #######
-
+#######
+#######
 #######
 
-#######
+
 
 
 last_command = "none"
@@ -38,49 +38,11 @@ esp32_ip = "none"
 
 
 
-#######
 
 #######
-
 #######
-
 #######
-
-
-# --- Prueba de conexión a MongoDB ---
-def test_mongodb_connection():
-    try:
-        client.admin.command('ping')
-        print("Pinged your deployment. You successfully connected to MongoDB!")
-    except Exception as e:
-        print(f"Error al conectar con MongoDB: {e}")
-        # En una aplicación real, podrías querer manejar esto de forma más robusta,
-        # como salir de la aplicación o reintentar.
-
-# --- Rutas de la aplicación Flask ---
-@app.route('/')
-def home():
-    # El método HEAD es manejado automáticamente por Flask para rutas GET.
-    # Si una solicitud HEAD llega aquí, Flask simplemente enviará los encabezados
-    # de la respuesta que normalmente se enviarían para una solicitud GET,
-    # sin enviar el cuerpo de la plantilla. Esto es lo esperado.
-    return render_template('PaginaInicioSes.html')
-
-@app.route('/pagina2')
-def camera():
-    global esp32_ip
-    return render_template("index.html", ip_camara=esp32_ip)
-
-
-
-
-
-#####
-#####
-#####
-#####
-#####
-#####
+#######
 
 
 
@@ -181,6 +143,45 @@ def proxy_stream():
 #####
 #####
 #####
+
+
+
+
+# --- Prueba de conexión a MongoDB ---
+def test_mongodb_connection():
+    try:
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+    except Exception as e:
+        print(f"Error al conectar con MongoDB: {e}")
+        # En una aplicación real, podrías querer manejar esto de forma más robusta,
+        # como salir de la aplicación o reintentar.
+
+# --- Rutas de la aplicación Flask ---
+@app.route('/')
+def home():
+    # El método HEAD es manejado automáticamente por Flask para rutas GET.
+    # Si una solicitud HEAD llega aquí, Flask simplemente enviará los encabezados
+    # de la respuesta que normalmente se enviarían para una solicitud GET,
+    # sin enviar el cuerpo de la plantilla. Esto es lo esperado.
+    return render_template('PaginaInicioSes.html')
+
+@app.route('/pagina2')
+def camera():
+    global esp32_ip
+    return render_template("index.html", ip_camara=esp32_ip)
+
+
+
+
+
+#####
+#####
+#####
+#####
+#####
+#####
+
 
 
 
