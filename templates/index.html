@@ -125,8 +125,9 @@
     <h1>ESP32-CAM Robot</h1>
 
 
-    <img id="streamCamara" src="" alt="Stream cámara" />
-    <div id="loadingMessage">Cargando stream...</div>
+    <div id="loadingMessage">Cargando stream de cámara...</div>
+    <img id="streamCamara" src="/proxy_stream" style="display: none; max-width: 100%;" onload="this.style.display='block'; document.getElementById('loadingMessage').style.display='none';">
+
 
 
     <table>
@@ -216,45 +217,5 @@
             }
         });
     </script>
-
-    <script>
-        function actualizarStream() {
-            fetch('/get_ip')
-            .then(response => response.json())
-            .then(data => {
-                const ip = data.ip;
-                const video = document.createElement("video");
-                const loading = document.getElementById('loadingMessage');
-
-                if(ip && ip !== "none" && ip !== "") {
-                // Solo cambia el src si es diferente para evitar reloads innecesarios
-                if(video.src !== ip) {
-                    const videoUrl = ip;
-                    video.src = videoUrl; 
-                    video.controls = true; // Mostrar controles de video
-                    video.autoplay = true; // Reproducir automáticamente
-                    video.style.maxWidth = "100%";
-                    document.getElementById("streamCamara").appendChild(video);
-                }
-                } else {
-                video.src = "";           // Vaciar src si no hay IP
-                video.style.display = 'none';
-                loading.style.display = 'block';  // Mostrar mensaje de carga
-                }
-            })
-            .catch(error => {
-                console.error('Error al obtener IP:', error);
-            });
-        }
-
-        // Ejecutar la primera consulta cuando cargue la página
-        actualizarStream();
-
-        // Ejecutar la consulta periódica cada 3 segundos
-        setInterval(actualizarStream, 3000);
-    </script>
-
-
-
 </body>
 </html>
