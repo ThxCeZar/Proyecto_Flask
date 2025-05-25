@@ -44,29 +44,20 @@ def camera():
     return render_template('index.html') 
 
 
+@app.route('/action', methods=['GET'])
+def action():
+    global last_command
+    command = request.args.get('go')  # Obtiene el comando de la consulta
+    if command:
+        last_command = command  # Actualiza el último comando
+        print(f"Comando recibido: {command}")
+        return jsonify({"status": "success", "command": command})
+    return jsonify({"status": "error", "message": "No command provided"}), 400
 
 
 @app.route('/get_command', methods=['GET'])
-
 def get_command():
-    last_command = "none" # Valor por defecto si no hay comando establecido
-    # Aquí puedes devolver el comando actual o un comando específico
-    # que quieras que el ESP32 ejecute.
-    # Por ejemplo, siempre devolver "stop" si no hay un comando activo
-    # o el último comando establecido por otro lado.
-
-    # Simulación: Si quieres que el ESP32 siempre se detenga por defecto
-    # Si no hay un comando en la cola, podrías devolver "none"
-    # para que el ESP32 sepa que no hay un comando activo nuevo.
-    # Asegúrate de que el ESP32 entienda "none" como "sin cambio" o "stop".
-
     command_to_send = last_command # Envía el último comando establecido
-
-    # Una vez que el ESP32 ha recibido el comando, puedes resetearlo a "none"
-    # para que no repita el mismo comando hasta que uno nuevo sea establecido.
-    # Esto depende de tu lógica de control.
-    # Por ejemplo, si solo quieres que se ejecute una vez:
-    # last_command = "none" 
     return jsonify({"action": command_to_send})
   
 
@@ -84,15 +75,6 @@ def send_command():
         return jsonify({"status": "success", "command": command})
     return jsonify({"status": "error", "message": "No command provided"}), 400
 
-@app.route('/action', methods=['GET'])
-def action():
-    global last_command
-    command = request.args.get('go')  # Obtiene el comando de la consulta
-    if command:
-        last_command = command  # Actualiza el último comando
-        print(f"Comando recibido: {command}")
-        return jsonify({"status": "success", "command": command})
-    return jsonify({"status": "error", "message": "No command provided"}), 400
 
 
 # --- Ejecución de la aplicación ---
