@@ -8,18 +8,40 @@ from flask_cors import CORS
 # --- Configuración de la aplicación Flask ---
 app = Flask(__name__)
 CORS(app)
-# --- Configuración de MongoDB ---
-# Es una buena práctica usar variables de entorno para las credenciales sensibles.
-# Por ejemplo, puedes definir una variable de entorno llamada MONGODB_URI
-# export MONGODB_URI="mongodb+srv://KimmyCesy:dLH5SqZntK53xu3z@clustercar.dd10bwo.mongodb.net/?retryWrites=true&w=majority&appName=ClusterCAR"
-uri = os.getenv("MONGODB_URI", "mongodb+srv://KimmyCesy:dLH5SqZntK53xu3z@clustercar.dd10bwo.mongodb.net/?retryWrites=true&w=majority&appName=ClusterCAR")
 
-# Conecta a MongoDB cuando la aplicación arranca, no en el main guard.
-# Puedes usar la API de servidor para asegurar la compatibilidad futura.
+
+#######
+
+#######
+
+#######
+
+#######
+
+uri = os.getenv("MONGODB_URI", "mongodb+srv://KimmyCesy:dLH5SqZntK53xu3z@clustercar.dd10bwo.mongodb.net/?retryWrites=true&w=majority&appName=ClusterCAR")
 client = MongoClient(uri, server_api=ServerApi('1'))
+
+#######
+
+#######
+
+#######
+
+#######
+
 
 last_command = "none"
 esp32_ip = "None"
+
+
+
+#######
+
+#######
+
+#######
+
+#######
 
 
 # --- Prueba de conexión a MongoDB ---
@@ -43,7 +65,8 @@ def home():
 
 @app.route('/pagina2')
 def camera():
-    return render_template('index.html') 
+    global esp32_ip
+    return render_template("index.html", ip_camara=esp32_ip)
 
 
 
