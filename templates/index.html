@@ -124,12 +124,18 @@
 <body>
     <h1>ESP32-CAM Robot</h1>
 
-    {% if ip_camara %}
-        <img src="{{ ip_camara }}" width="320" height="240" alt="Stream ESP32-CAM">
-        <p>Conectado a: {{ ip_camara }}</p>
-    {% else %}
-        <p><strong>Esperando que el ESP32-CAM reporte su IP...</strong></p>
-    {% endif %}
+    <img id="cam" src="/ultima_imagen.jpg" width="320" height="240">
+
+  <script>
+    const img = document.getElementById("cam");
+
+    function refrescarImagen() {
+      // 🔁 Esta es la función que actualiza la imagen en intervalos mínimos
+      img.src = "/ultima_imagen.jpg?cache=" + new Date().getTime();
+    }
+
+    setInterval(refrescarImagen, 100);
+  </script>
     
     <table>
         <tr>

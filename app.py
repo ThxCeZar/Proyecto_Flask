@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, render_template, request
+from io import BytesIO
+from flask import Flask, jsonify, render_template, request, send_file
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os # Importar 'os' para manejar variables de entorno de forma segura
@@ -133,7 +134,18 @@ def actualizar_ip():
     print(f"[+] IP de cámara actualizada: {esp32_ip}")
     return jsonify({"status": "ok", "ip": esp32_ip}), 200
 
+@app.route('/upload', methods=['POST'])
+def recibir_imagen():
+    global ultima_imagen
+    ultima_imagen = BytesIO(request.data)
+    return "Imagen recibida", 200
 
+@app.route('/ultima_imagen.jpg')
+def servir_imagen():
+    global ultima_imagen
+    if ultima_imagen is None:
+        return "No hay imagen aún", 404
+    return send_file(ultima_imagen, mimetype='image/jpeg')
 
 
 
