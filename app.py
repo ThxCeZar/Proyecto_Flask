@@ -93,10 +93,9 @@ def actualizar_ip():
     data = request.get_json()
     if not data or 'ip' not in data:
         return jsonify({"error": "Falta el campo 'ip'"}), 400
-    print(f"[+] IP recibida por JSON: {data}")
-    print(f"[+] IP guardada en variable global: {esp32_ip}", flush=True)
+    
     esp32_ip = data['ip']
-    print(f"[+] IP de cámara actualizada: {esp32_ip}")
+    print(f"[+] IP de cámara actualizada: {esp32_ip}",flush=True)
     return jsonify({"status": "ok", "ip": esp32_ip}), 200
 
 @app.route('/upload', methods=['POST'])
