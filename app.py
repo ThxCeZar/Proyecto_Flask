@@ -19,6 +19,8 @@ uri = os.getenv("MONGODB_URI", "mongodb+srv://KimmyCesy:dLH5SqZntK53xu3z@cluster
 client = MongoClient(uri, server_api=ServerApi('1'))
 
 last_command = "none"
+esp32_ip = "None"
+
 
 # --- Prueba de conexión a MongoDB ---
 def test_mongodb_connection():
