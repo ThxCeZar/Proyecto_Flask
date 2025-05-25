@@ -2,10 +2,12 @@ from flask import Flask, jsonify, render_template, request
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os # Importar 'os' para manejar variables de entorno de forma segura
+from flask_cors import CORS
+
 
 # --- Configuración de la aplicación Flask ---
 app = Flask(__name__)
-
+CORS(app)
 # --- Configuración de MongoDB ---
 # Es una buena práctica usar variables de entorno para las credenciales sensibles.
 # Por ejemplo, puedes definir una variable de entorno llamada MONGODB_URI
@@ -43,8 +45,9 @@ def camera():
 
 
 @app.route('/get_command', methods=['GET'])
+
 def get_command():
-    global last_command
+    last_command = "none" # Valor por defecto si no hay comando establecido
     # Aquí puedes devolver el comando actual o un comando específico
     # que quieras que el ESP32 ejecute.
     # Por ejemplo, siempre devolver "stop" si no hay un comando activo
@@ -62,8 +65,8 @@ def get_command():
     # Esto depende de tu lógica de control.
     # Por ejemplo, si solo quieres que se ejecute una vez:
     # last_command = "none" 
-
     return jsonify({"action": command_to_send})
+  
 
 # Ruta para que el frontend (HTML con botones) envíe comandos a Flask
 # Asume que tu HTML en Render.com enviará el comando a esta ruta
