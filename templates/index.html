@@ -127,23 +127,23 @@
     <table>
         <tr>
             <td colspan="3">
-                <button class="button icon-button" onmousedown="toggleCheckbox('forward');" ontouchstart="toggleCheckbox('forward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">^</button>
+                <button id="btn-forward" class="button icon-button" onmousedown="toggleCheckbox('forward');" ontouchstart="toggleCheckbox('forward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">^</button>
             </td>
         </tr>
         <tr>
             <td>
-                <button class="button icon-button" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&lt;</button>
+                <button id="btn-left" class="button icon-button" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&lt;</button>
             </td>
             <td>
-                <button class="button icon-button" onmousedown="toggleCheckbox('stop');" ontouchstart="toggleCheckbox('stop');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&#x23F8;</button>
+                <button id="btn-stop" class="button icon-button" onmousedown="toggleCheckbox('stop');" ontouchstart="toggleCheckbox('stop');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&#x23F8;</button>
             </td>
             <td>
-                <button class="button icon-button" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&gt;</button>
+                <button id="btn-right" class="button icon-button" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&gt;</button>
             </td>
         </tr>
         <tr>
             <td colspan="3">
-                <button class="button icon-button" onmousedown="toggleCheckbox('backward');" ontouchstart="toggleCheckbox('backward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">v</button>
+                <button id="btn-backward" class="button icon-button" onmousedown="toggleCheckbox('backward');" ontouchstart="toggleCheckbox('backward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">v</button>
             </td>
         </tr>
         <tr>
@@ -161,6 +161,45 @@
             xhr.open("GET", "/action?go=" + x, true);
             xhr.send();
         }
+
+        // Map keys to actions and buttons
+        const keyMap = {
+            'ArrowUp': {action: 'forward', buttonId: 'btn-forward'},
+            'ArrowDown': {action: 'backward', buttonId: 'btn-backward'},
+            'ArrowLeft': {action: 'left', buttonId: 'btn-left'},
+            'ArrowRight': {action: 'right', buttonId: 'btn-right'},
+            'w': {action: 'forward', buttonId: 'btn-forward'},
+            'W': {action: 'forward', buttonId: 'btn-forward'},
+            's': {action: 'backward', buttonId: 'btn-backward'},
+            'S': {action: 'backward', buttonId: 'btn-backward'},
+            'a': {action: 'left', buttonId: 'btn-left'},
+            'A': {action: 'left', buttonId: 'btn-left'},
+            'd': {action: 'right', buttonId: 'btn-right'},
+            'D': {action: 'right', buttonId: 'btn-right'}
+        };
+
+        const activeKeys = new Set();
+
+        // Handle keydown events
+        window.addEventListener('keydown', function(e) {
+            if (keyMap[e.key] && !activeKeys.has(e.key)) {
+                activeKeys.add(e.key);
+                const {action, buttonId} = keyMap[e.key];
+                toggleCheckbox(action);
+                document.getElementById(buttonId).classList.add('pressed');
+            }
+        });
+
+        // Handle keyup events
+        window.addEventListener('keyup', function(e) {
+            if (keyMap[e.key]) {
+                activeKeys.delete(e.key);
+                toggleCheckbox('stop');
+                const {buttonId} = keyMap[e.key];
+                document.getElementById(buttonId).classList.remove('pressed');
+            }
+        });
+
         window.onload = function() {
             document.getElementById("photo").src = window.location.href.slice(0, -1) + ":81/stream";
         };
