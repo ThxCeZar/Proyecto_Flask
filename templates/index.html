@@ -220,6 +220,31 @@
             document.getElementById("photo").src = window.location.href.slice(0, -1) + ":80/stream";
         };
     </script>
+
+
+
+
+
+
+<script>
+        // URL del stream de video
+        const videoUrl = "http://<IP_DEL_ESP32>:81/stream"; // Reemplaza con tu URL
+        // Crear un nuevo elemento de video
+        const video = document.createElement("video");
+        video.src = videoUrl; // Establecer la fuente del video
+        video.controls = true; // Mostrar controles de video
+        video.autoplay = true; // Reproducir automáticamente
+        video.style.maxWidth = "100%"; // Establecer el ancho máximo para que sea responsivo
+        // Agregar el video al contenedor en el DOM
+        document.getElementById("streamCamara").appendChild(video);
+    </script>
+
+
+
+
+
+
+<!--
     <script>
         function actualizarStream() {
             fetch('/get_ip')
@@ -253,5 +278,8 @@
         // Ejecutar la consulta periódica cada 3 segundos
         setInterval(actualizarStream, 3000);
     </script>
+-->
+
+
 </body>
 </html>
