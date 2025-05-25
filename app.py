@@ -1,195 +1,81 @@
 from io import BytesIO
-from flask import Flask, abort, jsonify, logging, render_template, request, send_file, stream_with_context , Response
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-import os # Importar 'os' para manejar variables de entorno de forma segura
-import requests
+from flask import Flask, jsonify, request, send_file, abort, render_template
+from flask_cors import CORS
+import os
 import logging
 
-from flask_cors import CORS
-
-
-
-# --- Configuración de la aplicación Flask ---
 app = Flask(__name__)
 CORS(app)
 
 
-#######
-#######
-#######
-#######
-
-
-
-uri = os.getenv("MONGODB_URI", "mongodb+srv://KimmyCesy:dLH5SqZntK53xu3z@clustercar.dd10bwo.mongodb.net/?retryWrites=true&w=majority&appName=ClusterCAR")
-client = MongoClient(uri, server_api=ServerApi('1'))
-
-
-
-#######
-#######
-#######
-#######
-
-
-
-
 last_command = "none"
-esp32_ip = ""
-
-
-
-
-#######
-#######
-#######
-#######
+# Si no vas a usar IP ni proxy, eliminas esp32_ip
 
 
 
 
 
 
-@app.route('/action', methods=['GET'])
-def action():
+
+@app.route('/send_command', methods=['POST'])
+def send_command():
     global last_command
-    command = request.args.get('go')  # Obtiene el comando de la consulta
+    data = request.get_json()
+    command = data.get('command') if data else None
+
     if command:
-        last_command = command  # Actualiza el último comando
-        print(f"Comando recibido: {command}")
-        
-        # Reiniciar last_command a "none" si el comando es "stop"
-        if command == "stop":
-            last_command = "none"
-        
+        last_command = command
+        print(f"Comando '{command}' recibido de la web.")
         return jsonify({"status": "success", "command": command})
     return jsonify({"status": "error", "message": "No command provided"}), 400
-
 
 @app.route('/get_command', methods=['GET'])
 def get_command():
     global last_command
-    command_to_send = last_command # Envía el último comando establecido
-    return jsonify({"action": command_to_send})
+    return jsonify({"action": last_command})
 
 
-# Ruta para que el frontend (HTML con botones) envíe comandos a Flask
-# Asume que tu HTML en Render.com enviará el comando a esta ruta
-@app.route('/send_command', methods=['POST', 'GET']) # Puedes usar GET si es simple, pero POST es mejor
-def send_command():
-    global last_command
-    command = request.args.get('command') # Si usas GET para enviar
-    # O: command = request.json.get('command') # Si usas POST con JSON
-
-    if command:
-        last_command = command
-        print(f"Comando '{command}' recibido de la web. Siguiente comando para ESP32: {last_command}")
-        return jsonify({"status": "success", "command": command})
-    return jsonify({"status": "error", "message": "No command provided"}), 400
 
 
-@app.route('/actualizar_ip', methods=['POST'])
-def actualizar_ip():
-    global esp32_ip
-    logging.info("Se llamó a /actualizar_ip")
-    print("[DEBUG] Se llamó a /actualizar_ip", flush=True) 
-    data = request.get_json()
-    if not data or 'ip' not in data:
-        return jsonify({"error": "Falta el campo 'ip'"}), 400
-    
-    esp32_ip = data['ip']
-    print(f"[+] IP de cámara actualizada: {esp32_ip}",flush=True)
-    return jsonify({"status": "ok", "ip": esp32_ip}), 200
+
 
 
 @app.route('/upload', methods=['POST'])
 def recibir_imagen():
-    global ultima_imagen
-    ultima_imagen = BytesIO(request.data)
-    return "Imagen recibida", 200
-
-@app.route('/guardar_imagen', methods=['POST'])
-def guardar_imagen():
+    # Guardamos la imagen en disco para persistencia simple
     with open('/tmp/ultima_imagen.jpg', 'wb') as f:
         f.write(request.data)
-    return 'Imagen recibida', 200
+    return jsonify({"status": "ok", "message": "Imagen recibida"}), 200
 
 @app.route('/ultima_imagen.jpg')
 def servir_imagen():
-    if os.path.exists("ultima_imagen.jpg"):
-        return send_file("ultima_imagen.jpg", mimetype='image/jpeg')
+    imagen_path = '/tmp/ultima_imagen.jpg'
+    if os.path.exists(imagen_path):
+        return send_file(imagen_path, mimetype='image/jpeg')
     else:
         return abort(404, description="Imagen no encontrada")
 
-@app.route('/proxy_stream')
-def proxy_stream():
-    if esp32_ip == "none":
-        return "Cámara no conectada", 404
-    def generate():
-        with requests.get(esp32_ip, stream=True) as r:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    yield chunk
-
-    return Response(stream_with_context(generate()), content_type='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/get_ip', methods=['GET'])
-def get_ip():
-    global esp32_ip
-    return jsonify({"ip": esp32_ip})
-
-
-
-#####
-#####
-#####
-#####
-#####
-#####
-#####
-#####
-#####
-#####
 
 
 
 
-# --- Prueba de conexión a MongoDB ---
-def test_mongodb_connection():
-    try:
-        client.admin.command('ping')
-        print("Pinged your deployment. You successfully connected to MongoDB!")
-    except Exception as e:
-        print(f"Error al conectar con MongoDB: {e}")
-        # En una aplicación real, podrías querer manejar esto de forma más robusta,
-        # como salir de la aplicación o reintentar.
 
-# --- Rutas de la aplicación Flask ---
+
+
+
+
+
+
+
+
 @app.route('/')
 def home():
-    # El método HEAD es manejado automáticamente por Flask para rutas GET.
-    # Si una solicitud HEAD llega aquí, Flask simplemente enviará los encabezados
-    # de la respuesta que normalmente se enviarían para una solicitud GET,
-    # sin enviar el cuerpo de la plantilla. Esto es lo esperado.
     return render_template('PaginaInicioSes.html')
 
 @app.route('/pagina2')
 def camera():
-    global esp32_ip
-    ip_para_template = esp32_ip if esp32_ip else ""
-    return render_template("index.html", ip_camara=esp32_ip)
-
-
-
-
-
-#####
-#####
-#####
-#####
-#####
-#####
+    # No se necesita pasar IP si no haces proxy
+    return render_template("index.html")
 
 
 
@@ -199,11 +85,17 @@ def camera():
 
 
 
+def test_mongodb_connection():
+    # Si no usas MongoDB aún, puedes comentar o dejar solo para pruebas
+    pass
 
 
 
-# --- Ejecución de la aplicación ---
+
+
+
+
+
 if __name__ == '__main__':
-    # Antes de iniciar la aplicación Flask, asegúrate de que la conexión a MongoDB esté probada.
     test_mongodb_connection()
     app.run(debug=True)

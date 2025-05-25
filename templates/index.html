@@ -125,9 +125,35 @@
     <h1>ESP32-CAM Robot</h1>
 
 
+    <img id="streamCamara" src="" style="max-width: 100%; border: 2px solid var(--neon-red); border-radius: 8px; box-shadow: 0 0 10px var(--neon-red), 0 0 20px var(--neon-red);" alt="Stream de cámara" />
     <div id="loadingMessage">Cargando stream de cámara...</div>
-    <img id="streamCamara" src="/proxy_stream" style="display: none; max-width: 100%;" onload="this.style.display='block'; document.getElementById('loadingMessage').style.display='none';">
 
+    <script>
+        const streamImg = document.getElementById('streamCamara');
+        const loadingMessage = document.getElementById('loadingMessage');
+
+        function actualizarImagen() {
+            // Añadimos un timestamp para evitar caché
+            streamImg.src = "/ultima_imagen.jpg?t=" + new Date().getTime();
+
+            // Si la imagen carga, ocultar loading
+            streamImg.onload = () => {
+                loadingMessage.style.display = "none";
+                streamImg.style.display = "block";
+            };
+
+            streamImg.onerror = () => {
+                loadingMessage.innerText = "Error cargando imagen de cámara.";
+                streamImg.style.display = "none";
+            };
+        }
+
+        // Actualiza la imagen cada 1 segundo (1000 ms)
+        setInterval(actualizarImagen, 100);
+
+        // Carga inicial
+        actualizarImagen();
+    </script>
 
 
     <table>
@@ -165,7 +191,7 @@
         function toggleCheckbox(x) {
           console.log("Enviando comando:", x);
           var xhr = new XMLHttpRequest();
-          xhr.open("GET", "/action?go=" + x, true);
+          xhr.open("GET", "/send_command?command=" + x, true);
           
           // Manejar la respuesta
           xhr.onload = function() {
