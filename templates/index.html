@@ -215,55 +215,30 @@
                 document.getElementById(buttonId).classList.remove('pressed');
             }
         });
-
-        window.onload = function() {
-            document.getElementById("photo").src = window.location.href.slice(0, -1) + ":80/stream";
-        };
     </script>
 
-
-
-
-
-
-<script>
-        // URL del stream de video
-        const videoUrl = "http://<IP_DEL_ESP32>:81/stream"; // Reemplaza con tu URL
-        // Crear un nuevo elemento de video
-        const video = document.createElement("video");
-        video.src = videoUrl; // Establecer la fuente del video
-        video.controls = true; // Mostrar controles de video
-        video.autoplay = true; // Reproducir automáticamente
-        video.style.maxWidth = "100%"; // Establecer el ancho máximo para que sea responsivo
-        // Agregar el video al contenedor en el DOM
-        document.getElementById("streamCamara").appendChild(video);
-    </script>
-
-
-
-
-
-
-<!--
     <script>
         function actualizarStream() {
             fetch('/get_ip')
             .then(response => response.json())
             .then(data => {
                 const ip = data.ip;
-                const img = document.getElementById('streamCamara');
+                const video = document.createElement("video");
                 const loading = document.getElementById('loadingMessage');
 
                 if(ip && ip !== "none" && ip !== "") {
                 // Solo cambia el src si es diferente para evitar reloads innecesarios
-                if(img.src !== ip) {
-                    img.src = ip;
-                    loading.style.display = 'none';  // Ocultar mensaje de carga cuando ya tiene src
-                    img.style.display = 'block';
+                if(video.src !== ip) {
+                    const videoUrl = ip;
+                    video.src = videoUrl; 
+                    video.controls = true; // Mostrar controles de video
+                    video.autoplay = true; // Reproducir automáticamente
+                    video.style.maxWidth = "100%";
+                    document.getElementById("streamCamara").appendChild(video);
                 }
                 } else {
-                img.src = "";           // Vaciar src si no hay IP
-                img.style.display = 'none';
+                video.src = "";           // Vaciar src si no hay IP
+                video.style.display = 'none';
                 loading.style.display = 'block';  // Mostrar mensaje de carga
                 }
             })
@@ -278,7 +253,7 @@
         // Ejecutar la consulta periódica cada 3 segundos
         setInterval(actualizarStream, 3000);
     </script>
--->
+
 
 
 </body>
