@@ -54,15 +54,11 @@ def get_command():
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image part'}), 400
-
-    file = request.files['image']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-
-    # Guarda siempre con este nombre
-    file.save('static/ultima_imagen.jpg')  # ✅ OJO: en la carpeta 'static'
+    if not request.data:
+        return jsonify({'error': 'No image data'}), 400
+    image_data = request.data
+    with open('static/ultima_imagen.jpg', 'wb') as f:
+        f.write(image_data)
     return jsonify({'message': 'Image received successfully'}), 200
 
 
