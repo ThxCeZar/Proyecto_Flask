@@ -30,8 +30,12 @@
         }
 
         body {
-            padding-top: 30px;
+            padding: 30px 15px;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
         h1 {
@@ -40,20 +44,34 @@
             margin-bottom: 20px;
         }
 
+        .image-container {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px; /* Match table's max-width */
+        }
+
         img {
+            display: block;
             width: auto;
             max-width: 100%;
             height: auto;
-            margin-bottom: 20px;
+            margin: 0 auto; /* Center horizontally */
             border: 2px solid var(--neon-red);
             border-radius: 8px;
             box-shadow: 0 0 10px var(--neon-red), 0 0 20px var(--neon-red);
         }
 
+        #loadingMessage {
+            margin-top: 10px;
+            font-size: 16px;
+            color: var(--neon-red);
+        }
+
         table {
             margin: 0 auto;
             width: 100%;
-            max-width: 400px;
+            max-width: 400px; /* Consistent with image-container */
         }
 
         td {
@@ -80,16 +98,15 @@
             box-shadow: 0 0 10px var(--neon-red-dark), 0 0 20px var(--neon-red-dark);
         }
 
-        /* Buttons with no fill and neon red text and border for directional and stop buttons */
         .button.icon-button {
             background: transparent;
             color: var(--neon-red);
             padding: 0;
-            min-width: 60px; /* Increased size for remote control effect */
-            min-height: 60px; /* Increased size for remote control effect */
-            line-height: 60px; /* Center text vertically */
+            min-width: 60px;
+            min-height: 60px;
+            line-height: 60px;
             font-weight: 700;
-            font-size: 36px; /* Increased font size for better visibility */
+            font-size: 36px;
             border: 2px solid var(--neon-red);
             border-radius: var(--button-radius);
             box-shadow: 0 0 5px var(--neon-red), 0 0 10px var(--neon-red);
@@ -113,44 +130,26 @@
                 padding: 10px 15px;
             }
             .button.icon-button {
-                font-size: 24px; /* Adjusted for smaller screens */
-                min-width: 50px; /* Adjusted for smaller screens */
-                min-height: 50px; /* Adjusted for smaller screens */
-                line-height: 50px; /* Adjusted for smaller screens */
+                font-size: 24px;
+                min-width: 50px;
+                min-height: 50px;
+                line-height: 50px;
+            }
+            .image-container {
+                max-width: 100%;
+            }
+            img {
+                max-width: 90%; /* Slightly smaller on mobile */
             }
         }
     </style>
 </head>
 <body>
     <h1>ESP32-CAM Robot</h1>
-
-
-    <img id="streamCamara" src="" style="max-width: 100%; border: 2px solid var(--neon-red); border-radius: 8px; box-shadow: 0 0 10px var(--neon-red), 0 0 20px var(--neon-red);" alt="Stream de cámara" />
-    <div id="loadingMessage">Cargando stream de cámara...</div>
-
-    <script>
-        const img = document.getElementById('streamCamara');
-        const loadingMsg = document.getElementById('loadingMessage');
-
-        function actualizarImagen() {
-            const timestamp = new Date().getTime(); // evita caché
-            img.src = `/ultima_imagen.jpg?t=${timestamp}`;
-        }
-
-        img.onload = function () {
-            img.style.display = 'block';
-            loadingMsg.style.display = 'none';
-        };
-
-        img.onerror = function () {
-            img.style.display = 'none';
-            loadingMsg.style.display = 'block';
-        };
-
-        // Actualiza la imagen cada 300ms (ajustable)
-        setInterval(actualizarImagen, 170);
-    </script>
-
+    <div class="image-container">
+        <img id="streamCamara" src="" alt="Stream de cámara" />
+        <div id="loadingMessage">Cargando stream de cámara...</div>
+    </div>
     <table>
         <tr>
             <td colspan="3">
@@ -159,13 +158,13 @@
         </tr>
         <tr>
             <td>
-                <button id="btn-left" class="button icon-button" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&lt;</button>
+                <button id="btn-left" class="button icon-button" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');"><</button>
             </td>
             <td>
-                <button id="btn-stop" class="button icon-button" onmousedown="toggleCheckbox('stop');" ontouchstart="toggleCheckbox('stop');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&#x23F8;</button>
+                <button id="btn-stop" class="button icon-button" onmousedown="toggleCheckbox('stop');" ontouchstart="toggleCheckbox('stop');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">⏸</button>
             </td>
             <td>
-                <button id="btn-right" class="button icon-button" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">&gt;</button>
+                <button id="btn-right" class="button icon-button" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">></button>
             </td>
         </tr>
         <tr>
@@ -181,14 +180,31 @@
             </td>
         </tr>
     </table>
-
     <script>
-           function toggleCheckbox(x) {
+        const img = document.getElementById('streamCamara');
+        const loadingMsg = document.getElementById('loadingMessage');
+
+        function actualizarImagen() {
+            const timestamp = new Date().getTime();
+            img.src = `/ultima_imagen.jpg?t=${timestamp}`;
+        }
+
+        img.onload = function () {
+            img.style.display = 'block';
+            loadingMsg.style.display = 'none';
+        };
+
+        img.onerror = function () {
+            img.style.display = 'none';
+            loadingMsg.style.display = 'block';
+        };
+
+        setInterval(actualizarImagen, 500); // Adjusted to 500ms for stability
+
+        function toggleCheckbox(x) {
             console.log("Enviando comando:", x);
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "/action?go=" + x, true);
-            
-            // Manejar la respuesta
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     console.log("Respuesta del servidor:", xhr.responseText);
@@ -196,12 +212,9 @@
                     console.error("Error en la solicitud:", xhr.statusText);
                 }
             };
-            
             xhr.send();
         }
-   
 
-        // Map keys to actions and buttons
         const keyMap = {
             'ArrowUp': {action: 'forward', buttonId: 'btn-forward'},
             'ArrowDown': {action: 'backward', buttonId: 'btn-backward'},
@@ -219,7 +232,6 @@
 
         const activeKeys = new Set();
 
-        // Handle keydown events
         window.addEventListener('keydown', function(e) {
             if (keyMap[e.key] && !activeKeys.has(e.key)) {
                 activeKeys.add(e.key);
@@ -229,7 +241,6 @@
             }
         });
 
-        // Handle keyup events
         window.addEventListener('keyup', function(e) {
             if (keyMap[e.key]) {
                 activeKeys.delete(e.key);
