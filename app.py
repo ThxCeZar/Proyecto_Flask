@@ -1,5 +1,5 @@
 from io import BytesIO
-from flask import Flask, jsonify, request, send_file, abort, render_template
+from flask import Flask, jsonify, request, send_file, abort, render_template, send_from_directory
 from flask_cors import CORS
 import os
 import logging
@@ -52,23 +52,25 @@ def get_command():
 
 
 
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image part'}), 400
 
-@app.route('/upload', methods=['POST'])
-def recibir_imagen():
-    # Guardamos la imagen en disco para persistencia simple
-    with open('/tempi/ultima_imagen.jpg', 'wb') as f:
-        f.write(request.data)
-    return jsonify({"status": "ok", "message": "Imagen recibida"}), 200
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    # Guarda siempre con este nombre
+    file.save('static/ultima_imagen.jpg')  # ✅ OJO: en la carpeta 'static'
+    return jsonify({'message': 'Image received successfully'}), 200
+
 
 @app.route('/ultima_imagen.jpg')
-def servir_imagen():
-    imagen_path = '/tempi/ultima_imagen.jpg'
-    if os.path.exists(imagen_path):
-        return send_file(imagen_path, mimetype='image/jpeg')
-    else:
-        return abort(404, description="Imagen no encontrada")
+def ultima_imagen():
+    return send_from_directory('.', 'ultima_imagen.jpg')
 
-
+    
 
 
 
