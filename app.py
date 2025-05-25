@@ -56,13 +56,13 @@ def get_command():
 @app.route('/upload', methods=['POST'])
 def recibir_imagen():
     # Guardamos la imagen en disco para persistencia simple
-    with open('/tmp/ultima_imagen.jpg', 'wb') as f:
+    with open('/tempi/ultima_imagen.jpg', 'wb') as f:
         f.write(request.data)
     return jsonify({"status": "ok", "message": "Imagen recibida"}), 200
 
 @app.route('/ultima_imagen.jpg')
 def servir_imagen():
-    imagen_path = '/tmp/ultima_imagen.jpg'
+    imagen_path = '/tempi/ultima_imagen.jpg'
     if os.path.exists(imagen_path):
         return send_file(imagen_path, mimetype='image/jpeg')
     else:
