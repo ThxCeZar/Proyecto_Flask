@@ -129,7 +129,10 @@ def proxy_stream():
 
     return Response(stream_with_context(generate()), content_type='multipart/x-mixed-replace; boundary=frame')
 
-
+@app.route('/get_ip', methods=['GET'])
+def get_ip():
+    global esp32_ip
+    return jsonify({"ip": esp32_ip})
 
 
 

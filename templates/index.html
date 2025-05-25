@@ -125,11 +125,8 @@
     <h1>ESP32-CAM Robot</h1>
 
 
-    {% if ip_camara %}
-  <img src="{{ ip_camara }}" alt="Stream cámara" />
-{% else %}
-  <p>No hay cámara disponible</p>
-{% endif %}
+    <img id="streamCamara" src="" alt="Stream cámara" />
+    <div id="loadingMessage">Cargando stream...</div>
 
 
     <table>
@@ -222,6 +219,39 @@
         window.onload = function() {
             document.getElementById("photo").src = window.location.href.slice(0, -1) + ":80/stream";
         };
+    </script>
+    <script>
+        function actualizarStream() {
+            fetch('/get_ip')
+            .then(response => response.json())
+            .then(data => {
+                const ip = data.ip;
+                const img = document.getElementById('streamCamara');
+                const loading = document.getElementById('loadingMessage');
+
+                if(ip && ip !== "none" && ip !== "") {
+                // Solo cambia el src si es diferente para evitar reloads innecesarios
+                if(img.src !== ip) {
+                    img.src = ip;
+                    loading.style.display = 'none';  // Ocultar mensaje de carga cuando ya tiene src
+                    img.style.display = 'block';
+                }
+                } else {
+                img.src = "";           // Vaciar src si no hay IP
+                img.style.display = 'none';
+                loading.style.display = 'block';  // Mostrar mensaje de carga
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener IP:', error);
+            });
+        }
+
+        // Ejecutar la primera consulta cuando cargue la página
+        actualizarStream();
+
+        // Ejecutar la consulta periódica cada 3 segundos
+        setInterval(actualizarStream, 3000);
     </script>
 </body>
 </html>
