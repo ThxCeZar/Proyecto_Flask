@@ -44,6 +44,21 @@ def camera():
     return render_template('index.html') 
 
 
+
+
+
+#####
+#####
+#####
+#####
+#####
+#####
+
+
+
+
+
+
 @app.route('/action', methods=['GET'])
 def action():
     global last_command
@@ -51,15 +66,21 @@ def action():
     if command:
         last_command = command  # Actualiza el último comando
         print(f"Comando recibido: {command}")
+        
+        # Reiniciar last_command a "none" si el comando es "stop"
+        if command == "stop":
+            last_command = "none"
+        
         return jsonify({"status": "success", "command": command})
     return jsonify({"status": "error", "message": "No command provided"}), 400
 
 
 @app.route('/get_command', methods=['GET'])
 def get_command():
+    global last_command
     command_to_send = last_command # Envía el último comando establecido
     return jsonify({"action": command_to_send})
-  
+
 
 # Ruta para que el frontend (HTML con botones) envíe comandos a Flask
 # Asume que tu HTML en Render.com enviará el comando a esta ruta
@@ -74,6 +95,29 @@ def send_command():
         print(f"Comando '{command}' recibido de la web. Siguiente comando para ESP32: {last_command}")
         return jsonify({"status": "success", "command": command})
     return jsonify({"status": "error", "message": "No command provided"}), 400
+
+
+
+
+
+#####
+#####
+#####
+#####
+#####
+#####
+#####
+#####
+#####
+#####
+
+
+
+
+
+
+
+
 
 
 
