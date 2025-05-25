@@ -35,6 +35,9 @@ def home():
     # sin enviar el cuerpo de la plantilla. Esto es lo esperado.
     return render_template('PaginaInicioSes.html')
 
+@app.route('/')
+def camera():
+    return render_template('index.html') 
 # --- Ejecución de la aplicación ---
 if __name__ == '__main__':
     # Antes de iniciar la aplicación Flask, asegúrate de que la conexión a MongoDB esté probada.
