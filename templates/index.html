@@ -186,7 +186,7 @@
         function toggleCheckbox(x) {
           console.log("Enviando comando:", x);
           var xhr = new XMLHttpRequest();
-          xhr.open("GET", "/send_command?command=" + x, true);
+          xhr.open("GET", "/action?go=" + x, true);
           
           // Manejar la respuesta
           xhr.onload = function() {
