@@ -157,9 +157,20 @@
 
     <script>
         function toggleCheckbox(x) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/action?go=" + x, true);
-            xhr.send();
+          console.log("Enviando comando:", x);
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", "/action?go=" + x, true);
+          
+          // Manejar la respuesta
+          xhr.onload = function() {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                  console.log("Respuesta del servidor:", xhr.responseText);
+              } else {
+                  console.error("Error en la solicitud:", xhr.statusText);
+              }
+          };
+          
+          xhr.send();
         }
 
         // Map keys to actions and buttons
@@ -201,7 +212,7 @@
         });
 
         window.onload = function() {
-            document.getElementById("photo").src = window.location.href.slice(0, -1) + ":81/stream";
+            document.getElementById("photo").src = window.location.href.slice(0, -1) + ":80/stream";
         };
     </script>
 </body>
