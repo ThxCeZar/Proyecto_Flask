@@ -1,5 +1,5 @@
 from io import BytesIO
-from flask import Flask, abort, jsonify, render_template, request, send_file, stream_with_context , Response
+from flask import Flask, abort, jsonify, logging, render_template, request, send_file, stream_with_context , Response
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os # Importar 'os' para manejar variables de entorno de forma segura
@@ -90,6 +90,8 @@ def send_command():
 @app.route('/actualizar_ip', methods=['POST'])
 def actualizar_ip():
     global esp32_ip
+    logging.info("Se llamó a /actualizar_ip")
+    print("[DEBUG] Se llamó a /actualizar_ip", flush=True) 
     data = request.get_json()
     if not data or 'ip' not in data:
         return jsonify({"error": "Falta el campo 'ip'"}), 400
@@ -97,6 +99,7 @@ def actualizar_ip():
     esp32_ip = data['ip']
     print(f"[+] IP de cámara actualizada: {esp32_ip}",flush=True)
     return jsonify({"status": "ok", "ip": esp32_ip}), 200
+
 
 @app.route('/upload', methods=['POST'])
 def recibir_imagen():
