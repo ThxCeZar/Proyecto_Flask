@@ -3,9 +3,7 @@ import bcrypt
 import json
 
 usuarios = [
-    {"username": "Kimmy", "password": "Kimmy0627@"},
-    {"username": "Cesy", "password": "Cedi82430@@"},
-    {"username": "ADMIN", "password": "Admin2025*"},
+    {"username": "", "password": ""},
 ]
 
 usuarios_hashed = []
