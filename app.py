@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os # Importar 'os' para manejar variables de entorno de forma segura
@@ -38,6 +38,48 @@ def home():
 @app.route('/pagina2')
 def camera():
     return render_template('index.html') 
+
+
+
+
+@app.route('/get_command', methods=['GET'])
+def get_command():
+    global last_command
+    # Aquí puedes devolver el comando actual o un comando específico
+    # que quieras que el ESP32 ejecute.
+    # Por ejemplo, siempre devolver "stop" si no hay un comando activo
+    # o el último comando establecido por otro lado.
+
+    # Simulación: Si quieres que el ESP32 siempre se detenga por defecto
+    # Si no hay un comando en la cola, podrías devolver "none"
+    # para que el ESP32 sepa que no hay un comando activo nuevo.
+    # Asegúrate de que el ESP32 entienda "none" como "sin cambio" o "stop".
+
+    command_to_send = last_command # Envía el último comando establecido
+
+    # Una vez que el ESP32 ha recibido el comando, puedes resetearlo a "none"
+    # para que no repita el mismo comando hasta que uno nuevo sea establecido.
+    # Esto depende de tu lógica de control.
+    # Por ejemplo, si solo quieres que se ejecute una vez:
+    # last_command = "none" 
+
+    return jsonify({"action": command_to_send})
+
+# Ruta para que el frontend (HTML con botones) envíe comandos a Flask
+# Asume que tu HTML en Render.com enviará el comando a esta ruta
+@app.route('/send_command', methods=['POST', 'GET']) # Puedes usar GET si es simple, pero POST es mejor
+def send_command():
+    global last_command
+    command = request.args.get('command') # Si usas GET para enviar
+    # O: command = request.json.get('command') # Si usas POST con JSON
+
+    if command:
+        last_command = command
+        print(f"Comando '{command}' recibido de la web. Siguiente comando para ESP32: {last_command}")
+        return jsonify({"status": "success", "command": command})
+    return jsonify({"status": "error", "message": "No command provided"}), 400
+
+
 
 
 # --- Ejecución de la aplicación ---
