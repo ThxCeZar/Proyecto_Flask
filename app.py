@@ -1,9 +1,11 @@
 from io import BytesIO
-from flask import Flask, abort, jsonify, render_template, request, send_file
+from flask import Flask, abort, jsonify, render_template, request, send_file, stream_with_context , Response
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os # Importar 'os' para manejar variables de entorno de forma segura
+import requests
 from flask_cors import CORS
+
 
 
 # --- Configuración de la aplicación Flask ---
@@ -153,7 +155,17 @@ def servir_imagen():
     else:
         return abort(404, description="Imagen no encontrada")
 
+@app.route('/proxy_stream')
+def proxy_stream():
+    if esp32_ip == "none":
+        return "Cámara no conectada", 404
+    def generate():
+        with requests.get(esp32_ip, stream=True) as r:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    yield chunk
 
+    return Response(stream_with_context(generate()), content_type='multipart/x-mixed-replace; boundary=frame')
 
 
 
